@@ -13,7 +13,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace StockPriceTracker
 {
-    // Модели данных
+    // ГЊГ®Г¤ГҐГ«ГЁ Г¤Г Г­Г­Г»Гµ
     public class Ticker
     {
         [Key]
@@ -55,7 +55,7 @@ namespace StockPriceTracker
         public DateTime Date { get; set; }
     }
 
-    // Контекст базы данных
+    // ГЉГ®Г­ГІГҐГЄГ±ГІ ГЎГ Г§Г» Г¤Г Г­Г­Г»Гµ
     public class StockDbContext : DbContext
     {
         public DbSet<Ticker> Tickers { get; set; }
@@ -77,7 +77,7 @@ namespace StockPriceTracker
         }
     }
 
-    // Модель данных API
+    // ГЊГ®Г¤ГҐГ«Гј Г¤Г Г­Г­Г»Гµ API
     public class StockData
     {
         public double[]? o { get; set; }
@@ -87,7 +87,7 @@ namespace StockPriceTracker
         public long[]? v { get; set; }
     }
 
-    // Сервис для работы с акциями
+    // Г‘ГҐГ°ГўГЁГ± Г¤Г«Гї Г°Г ГЎГ®ГІГ» Г± Г ГЄГ¶ГЁГїГ¬ГЁ
     public class StockService
     {
         private readonly HttpClient _httpClient;
@@ -114,7 +114,7 @@ namespace StockPriceTracker
 
             if (!File.Exists(tickerFilePath))
             {
-                throw new FileNotFoundException("Файл ticker.txt не найден");
+                throw new FileNotFoundException("Г”Г Г©Г« ticker.txt Г­ГҐ Г­Г Г©Г¤ГҐГ­");
             }
 
             var tickers = await File.ReadAllLinesAsync(tickerFilePath);
@@ -128,7 +128,7 @@ namespace StockPriceTracker
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Ошибка загрузки для {ticker}: {ex.Message}");
+                    Console.WriteLine($"ГЋГёГЁГЎГЄГ  Г§Г ГЈГ°ГіГ§ГЄГЁ Г¤Г«Гї {ticker}: {ex.Message}");
                 }
             }
         }
@@ -157,7 +157,7 @@ namespace StockPriceTracker
             response.EnsureSuccessStatusCode();
 
             var data = await response.Content.ReadFromJsonAsync<StockData>();
-            return data ?? throw new Exception("Не удалось получить данные");
+            return data ?? throw new Exception("ГЌГҐ ГіГ¤Г Г«Г®Г±Гј ГЇГ®Г«ГіГ·ГЁГІГј Г¤Г Г­Г­Г»ГҐ");
         }
 
         private async Task SaveStockDataToDatabase(string tickerSymbol, StockData stockData)
@@ -235,18 +235,18 @@ namespace StockPriceTracker
                 }
                 catch
                 {
-                    return "Не удалось загрузить данные для тикера";
+                    return "ГЌГҐ ГіГ¤Г Г«Г®Г±Гј Г§Г ГЈГ°ГіГ§ГЁГІГј Г¤Г Г­Г­Г»ГҐ Г¤Г«Гї ГІГЁГЄГҐГ°Г ";
                 }
             }
 
-            if (ticker == null) return "Тикер не найден";
+            if (ticker == null) return "Г’ГЁГЄГҐГ° Г­ГҐ Г­Г Г©Г¤ГҐГ­";
 
             var latestCondition = await context.TodaysConditions
                 .Where(c => c.TickerId == ticker.Id)
                 .OrderByDescending(c => c.Date)
                 .FirstOrDefaultAsync();
 
-            return latestCondition?.State ?? "Нет данных";
+            return latestCondition?.State ?? "ГЌГҐГІ Г¤Г Г­Г­Г»Гµ";
         }
     }
 
@@ -262,38 +262,38 @@ namespace StockPriceTracker
             txtTicker.LostFocus += AddPlaceholder;
             AddPlaceholder(null, null);
 
-            // Асинхронная предварительная загрузка данных при старте
+            // ГЂГ±ГЁГ­ГµГ°Г®Г­Г­Г Гї ГЇГ°ГҐГ¤ГўГ Г°ГЁГІГҐГ«ГјГ­Г Гї Г§Г ГЈГ°ГіГ§ГЄГ  Г¤Г Г­Г­Г»Гµ ГЇГ°ГЁ Г±ГІГ Г°ГІГҐ
             Loaded += MainWindow_Loaded;
         }
 
         private void RemovePlaceholder(object sender, RoutedEventArgs e)
         {
-            if (txtTicker.Text == "Введите тикер")
+            if (txtTicker.Text == "Г‚ГўГҐГ¤ГЁГІГҐ ГІГЁГЄГҐГ°")
                 txtTicker.Text = "";
         }
 
         private void AddPlaceholder(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtTicker.Text))
-                txtTicker.Text = "Введите тикер";
+                txtTicker.Text = "Г‚ГўГҐГ¤ГЁГІГҐ ГІГЁГЄГҐГ°";
         }
 
         private async void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             try
             {
-                // Инициализация базы данных
+                // Г€Г­ГЁГ¶ГЁГ Г«ГЁГ§Г Г¶ГЁГї ГЎГ Г§Г» Г¤Г Г­Г­Г»Гµ
                 await _stockService.InitializeDatabaseAsync();
 
-                // Предварительная загрузка данных
+                // ГЏГ°ГҐГ¤ГўГ Г°ГЁГІГҐГ«ГјГ­Г Гї Г§Г ГЈГ°ГіГ§ГЄГ  Г¤Г Г­Г­Г»Гµ
                 await _stockService.PreloadStockDataAsync();
 
-                txtResult.Text = "Данные предварительно загружены";
+                txtResult.Text = "Г„Г Г­Г­Г»ГҐ ГЇГ°ГҐГ¤ГўГ Г°ГЁГІГҐГ«ГјГ­Г® Г§Г ГЈГ°ГіГ¦ГҐГ­Г»";
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка предварительной загрузки: {ex.Message}",
-                    "Ошибка",
+                MessageBox.Show($"ГЋГёГЁГЎГЄГ  ГЇГ°ГҐГ¤ГўГ Г°ГЁГІГҐГ«ГјГ­Г®Г© Г§Г ГЈГ°ГіГ§ГЄГЁ: {ex.Message}",
+                    "ГЋГёГЁГЎГЄГ ",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }
@@ -302,10 +302,10 @@ namespace StockPriceTracker
         private async void CheckStock_Click(object sender, RoutedEventArgs e)
         {
             string ticker = txtTicker.Text.Trim().ToUpper();
-            if (ticker == "ВВЕДИТЕ ТИКЕР")
+            if (ticker == "Г‚Г‚Г…Г„Г€Г’Г… Г’Г€ГЉГ…Гђ")
             {
-                MessageBox.Show("Пожалуйста, введите тикер",
-                    "Ошибка",
+                MessageBox.Show("ГЏГ®Г¦Г Г«ГіГ©Г±ГІГ , ГўГўГҐГ¤ГЁГІГҐ ГІГЁГЄГҐГ°",
+                    "ГЋГёГЁГЎГЄГ ",
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
                 return;
@@ -313,19 +313,19 @@ namespace StockPriceTracker
             try
             {
                 var performance = await _stockService.GetStockPerformanceAsync(ticker);
-                txtResult.Text = $"Состояние акции {ticker}: {performance}";
+                txtResult.Text = $"Г‘Г®Г±ГІГ®ГїГ­ГЁГҐ Г ГЄГ¶ГЁГЁ {ticker}: {performance}";
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка: {ex.Message}",
-                    "Ошибка",
+                MessageBox.Show($"ГЋГёГЁГЎГЄГ : {ex.Message}",
+                    "ГЋГёГЁГЎГЄГ ",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }
         }
     }
 
-    // Точка входа приложения
+    // Г’Г®Г·ГЄГ  ГўГµГ®Г¤Г  ГЇГ°ГЁГ«Г®Г¦ГҐГ­ГЁГї
     public partial class App : Application
     {
         protected override void OnStartup(StartupEventArgs e)
@@ -336,7 +336,7 @@ namespace StockPriceTracker
         }
     }
 
-    // Точка входа в приложение
+    // Г’Г®Г·ГЄГ  ГўГµГ®Г¤Г  Гў ГЇГ°ГЁГ«Г®Г¦ГҐГ­ГЁГҐ
     internal static class Program
     {
         [STAThread]
