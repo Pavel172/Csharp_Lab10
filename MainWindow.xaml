@@ -1,0 +1,35 @@
+<Window x:Class="StockPriceTracker.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Stock Price Tracker" Height="450" Width="800">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBox x:Name="txtTicker" 
+                 Grid.Row="0"
+                 Width="200" 
+                 Margin="0,0,0,20" 
+                 Text=""
+                 HorizontalAlignment="Center"
+                 VerticalContentAlignment="Center"/>
+
+        <Button Content="Проверить акцию" 
+                Grid.Row="1"
+                Click="CheckStock_Click"
+                Width="150"
+                Height="30"
+                HorizontalAlignment="Center"
+                Margin="0,0,0,10"/>
+
+        <TextBlock x:Name="txtResult" 
+                   Grid.Row="2" 
+                   Text="" 
+                   FontSize="16" 
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Top"/>
+    </Grid>
+</Window>
